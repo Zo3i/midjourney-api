@@ -348,17 +348,21 @@ export class MidjourneyApi extends Command {
       file_size,
       id: this.UpId++,
     });
-    const UploadSlot = attachments[0];
+    const UploadSlot = {
+        id: attachments[0].id,
+        uploaded_filename: attachments[0].upload_filename,
+        upload_url: attachments[0].upload_url,
+    };
     await this.uploadImage(UploadSlot, fileData, mimeType);
     const resp: DiscordImage = {
       id: UploadSlot.id,
-      filename: UploadSlot.upload_filename.split("/").pop() || "image.png",
-      upload_filename: UploadSlot.upload_filename,
+      filename: UploadSlot.uploaded_filename.split("/").pop() || "image.png",
+      uploaded_filename: UploadSlot.uploaded_filename,
     };
     return resp;
   }
 
-  async UploadImageByBole(blob: Blob, filename = nextNonce() + ".png") {
+  async UploadImageByBlob(blob: Blob, filename = nextNonce() + ".png") {
     const fileData = await blob.arrayBuffer();
     const mimeType = blob.type;
     const file_size = fileData.byteLength;
@@ -370,12 +374,16 @@ export class MidjourneyApi extends Command {
       file_size,
       id: this.UpId++,
     });
-    const UploadSlot = attachments[0];
+    const UploadSlot = {
+        id: attachments[0].id,
+        uploaded_filename: attachments[0].upload_filename,
+        upload_url: attachments[0].upload_url,
+    };
     await this.uploadImage(UploadSlot, fileData, mimeType);
     const resp: DiscordImage = {
       id: UploadSlot.id,
-      filename: UploadSlot.upload_filename.split("/").pop() || "image.png",
-      upload_filename: UploadSlot.upload_filename,
+      filename: UploadSlot.uploaded_filename.split("/").pop() || "image.png",
+      uploaded_filename: UploadSlot.uploaded_filename,
     };
     return resp;
   }
@@ -385,7 +393,7 @@ export class MidjourneyApi extends Command {
    */
   private async attachments(
     ...files: UploadParam[]
-  ): Promise<{ attachments: UploadSlot[] }> {
+  ): Promise<{ attachments: any }> {
     const { SalaiToken, DiscordBaseUrl, ChannelId, fetch } = this.config;
     const headers = {
       Authorization: SalaiToken,
@@ -401,7 +409,7 @@ export class MidjourneyApi extends Command {
       body: JSON.stringify(body),
     });
     if (response.status === 200) {
-      return (await response.json()) as { attachments: UploadSlot[] };
+      return await response.json();
     }
     const error = `Attachments return ${response.status} ${
       response.statusText
@@ -434,16 +442,17 @@ export class MidjourneyApi extends Command {
     const payload = await this.describePayload(image, nonce);
     return this.safeIteractions(payload);
   }
-  async upImageApi(image: DiscordImage, nonce?: string) {
+  async SendImageMessageApi(image: DiscordImage, nonce = nextNonce()) {
     const { SalaiToken, DiscordBaseUrl, ChannelId, fetch } = this.config;
+    image.id = "0"
     const payload = {
-      content: "",
-      nonce,
-      channel_id: ChannelId,
-      type: 0,
-      sticker_ids: [],
-      attachments: [image],
-    };
+        content: '',
+        nonce,
+        channel_id: ChannelId,
+        type: 0,
+        sticker_ids: [],
+        attachments: [image],
+      };
 
     const url = new URL(
       `${DiscordBaseUrl}/api/v9/channels/${ChannelId}/messages`
@@ -457,7 +466,6 @@ export class MidjourneyApi extends Command {
       method: "POST",
       body: JSON.stringify(payload),
     });
-
-    return response.status;
+    return response.status === 200 ? await response.json() : false;
   }
 }

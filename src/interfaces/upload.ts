@@ -5,11 +5,11 @@ export type UploadParam = {
 };
 export type UploadSlot = {
   id: number;
-  upload_filename: string;
+  uploaded_filename: string;
   upload_url: string;
 };
 export type DiscordImage = {
   id: number | string;
   filename: string;
-  upload_filename: string;
+  uploaded_filename: string;
 };

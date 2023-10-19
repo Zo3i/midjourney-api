@@ -174,7 +174,7 @@ export class Midjourney extends MidjourneyMessage {
   async DescribeByBlob(blob: Blob) {
     const wsClient = await this.getWsClient();
     const nonce = nextNonce();
-    const DcImage = await this.MJApi.UploadImageByBole(blob);
+    const DcImage = await this.MJApi.UploadImageByBlob(blob);
     this.log(`Describe`, DcImage);
     const httpStatus = await this.MJApi.DescribeApi(DcImage, nonce);
     if (httpStatus !== 204) {
@@ -391,7 +391,7 @@ export class Midjourney extends MidjourneyMessage {
     const res = await app.changeFace(Target, Source);
     this.log(res[0]);
     const blob = await base64ToBlob(res[0] as string);
-    const DcImage = await this.MJApi.UploadImageByBole(blob);
+    const DcImage = await this.MJApi.UploadImageByBlob(blob);
     const nonce = nextNonce();
     const httpStatus = await this.MJApi.DescribeApi(DcImage, nonce);
     if (httpStatus !== 204) {

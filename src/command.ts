@@ -144,7 +144,7 @@ export class Command {
         {
           id: <string>image.id,
           filename: image.filename,
-          uploaded_filename: image.upload_filename,
+          uploaded_filename: image.uploaded_filename,
         },
       ]
     );
