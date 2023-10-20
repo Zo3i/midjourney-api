@@ -614,6 +614,7 @@ export class WsMessage {
         if (message && message.progress === "done") {
           this.removeWaitMjEvent(nonce);
           messageId && this.removeSkipMessageId(messageId);
+          message.content.indexOf("**") !== -1 && (message.content = message.content.split("**")[1]);
           resolve(message);
           return;
         }
