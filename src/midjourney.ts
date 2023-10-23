@@ -273,7 +273,7 @@ export class Midjourney extends MidjourneyMessage {
         loading,
         messageId: msgId,
         prompt: content,
-        onmodal: async (nonde, id) => {
+        onmodal: async (_, id) => {
           if (content === undefined || content === "") {
             return "";
           }
@@ -311,7 +311,6 @@ export class Midjourney extends MidjourneyMessage {
               return newNonce;
             default:
               return "";
-              throw new Error(`unknown customId ${customId}`);
           }
         },
       });

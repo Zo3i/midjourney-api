@@ -446,6 +446,7 @@ export class WsMessage {
     const eventMsg: MJEmit = {
       message: MJmsg,
     };
+    this.removeWaitMjEvent(event.nonce);
     this.emitImage(event.nonce, eventMsg);
   }
   private getEventByContent(content: string) {
@@ -614,7 +615,7 @@ export class WsMessage {
         if (message && message.progress === "done") {
           this.removeWaitMjEvent(nonce);
           messageId && this.removeSkipMessageId(messageId);
-          message.content.indexOf("**") !== -1 && (message.content = message.content.split("**")[1]);
+        //   message.content.indexOf("**") !== -1 && (message.content = message.content.split("**")[1]);
           resolve(message);
           return;
         }
@@ -625,18 +626,16 @@ export class WsMessage {
         prompt,
         onmodal: async (oldnonce, id) => {
           if (onmodal === undefined) {
-            // reject(new Error("onmodal is not defined"))
             return "";
           }
-          var nonce = await onmodal(oldnonce, id);
-          if (nonce === "") {
-            // reject(new Error("onmodal return empty nonce"))
+          var newNonce = await onmodal(oldnonce, id);
+          if (newNonce === "") {
             return "";
           }
           this.removeWaitMjEvent(oldnonce);
-          this.waitMjEvents.set(nonce, { nonce });
-          this.onceImage(nonce, handleImageMessage);
-          return nonce;
+          this.waitMjEvents.set(newNonce, { nonce: newNonce });
+          this.onceImage(newNonce, handleImageMessage);
+          return newNonce;
         },
       });
       this.onceImage(nonce, handleImageMessage);

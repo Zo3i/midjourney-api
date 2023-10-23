@@ -212,7 +212,7 @@ export class MidjourneyApi extends Command {
               {
                 type: 4,
                 custom_id: submitCustomId,
-                value: prompt,
+                value: prompt.indexOf("**") !== -1 ? prompt.split("**")[1] : prompt
               },
             ],
           },

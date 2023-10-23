@@ -120,12 +120,12 @@ export const content2progress = (content: string) => {
 
 export const content2prompt = (content: string) => {
   if (!content) return "";
-  const pattern = /\*\*(.*?)\*\*/; // Match **middle content
+  const pattern = /\*\*(.*?)\*\*/; // Match **middle content**
   const matches = content.match(pattern);
   if (matches && matches.length > 1) {
     return matches[1]; // Get the matched content
   } else {
-    console.log("No match found.", content);
+    console.log("[No match found]", content);
     return content;
   }
 };
