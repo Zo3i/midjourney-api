@@ -79,7 +79,8 @@ export class Command {
     });
     const data = await response.json();
     if (data?.application_commands?.[0]) {
-      return data.application_commands[0];
+        this.cache[name] = data.application_commands[0];
+        return data.application_commands[0];
     }
     throw new Error(`Failed to get application_commands for command ${name}`);
   }

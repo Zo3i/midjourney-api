@@ -45,7 +45,12 @@ export class MidjourneyApi extends Command {
     request: any;
     callback: (any: any) => void;
   }) => {
-    const httpStatus = await this.interactions(request);
+    let httpStatus = await this.interactions(request);
+    if (httpStatus === 400) {
+        // update version cache
+        request.data = await this.getCommand(request?.data?.name);
+        httpStatus = await this.interactions(request);
+    }
     callback(httpStatus);
     await sleep(this.config.ApiInterval);
   };
