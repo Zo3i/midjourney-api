@@ -143,13 +143,21 @@ export function custom2Type(custom: string) {
     return "variation";
   } else if (custom.includes("remaster")) {
     return "reroll";
+  }else if(custom.includes("pan")) {
+    return "pan";
   }
   return null;
 }
 
 export const toRemixCustom = (customID: string) => {
   const parts = customID.split("::");
-  const convertedString = `MJ::RemixModal::${parts[4]}::${parts[3]}::1`;
+  const type = custom2Type(customID);
+  let convertedString;
+  if(type === "pan") {
+    convertedString = `MJ::PanModal::${parts[2].split("_")[1]}::${parts[4]}::1`;
+  }else {
+    convertedString = `MJ::RemixModal::${parts[4]}::${parts[3]}::1`;
+  }
   return convertedString;
 };
 

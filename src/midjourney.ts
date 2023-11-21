@@ -55,10 +55,17 @@ export class Midjourney extends MidjourneyMessage {
       if (remix?.style == 3) {
         this.config.Remix = true;
         this.log(`Remix mode enabled`);
+      }else {
+        this.config.Remix = false;
+        this.log(`Remix mode disabled`);
       }
     }
     return this;
   }
+  getRemixStatus() {
+    return this.config.Remix === true;
+  }
+
   async Imagine(prompt: string, loading?: LoadingHandler) {
     prompt = prompt.trim();
     if (!this.config.Ws) {
@@ -247,23 +254,35 @@ export class Midjourney extends MidjourneyMessage {
     content,
     flags,
     loading,
+    remix,
+    propmt
   }: {
     msgId: string;
     customId: string;
     content?: string;
     flags: number;
     loading?: LoadingHandler;
+    remix?: boolean;
+    propmt?:string;
   }) {
     if (this.config.Ws) {
       await this.getWsClient();
     }
     const nonce = nextNonce();
+    console.log("custom-payload",{
+      msgId,
+      customId,
+      flags,
+      nonce,
+    });
+    
     const httpStatus = await this.MJApi.CustomApi({
       msgId,
       customId,
       flags,
       nonce,
     });
+
     if (httpStatus !== 204) {
       throw new Error(`CustomApi failed with status ${httpStatus}`);
     }
@@ -278,6 +297,8 @@ export class Midjourney extends MidjourneyMessage {
             return "";
           }
           const newNonce = nextNonce();
+          console.log("custom2Type(customId)",custom2Type(customId));
+          
           switch (custom2Type(customId)) {
             case "customZoom":
               const httpStatus = await this.MJApi.CustomZoomImagineApi({
@@ -292,15 +313,15 @@ export class Midjourney extends MidjourneyMessage {
                 );
               }
               return newNonce;
-            case "variation":
-              if (this.config.Remix !== true) {
+            case "variation":case "pan":
+              if (this.config.Remix !== true && remix !== true) {
                 return "";
               }
               customId = toRemixCustom(customId);
               const remixHttpStatus = await this.MJApi.RemixApi({
                 msgId: id,
                 customId,
-                prompt: content,
+                prompt: propmt || content,
                 nonce: newNonce,
               });
               if (remixHttpStatus !== 204) {

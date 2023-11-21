@@ -4,6 +4,7 @@ import {
   DiscordImage,
   MJConfig,
   ModalSubmitID,
+  PanModalSubmitID,
   RemixModalSubmitID,
   ShortenModalSubmitID,
   UploadParam,
@@ -241,12 +242,25 @@ export class MidjourneyApi extends Command {
     customId: string;
     prompt: string;
   }) {
+    let submitCustomId: ModalSubmitID;
+    const modalMode = customId.split("::")[1];
+    switch (modalMode) {
+      case "PanModal":
+        submitCustomId = PanModalSubmitID;
+        break;
+      case "RemixModal":
+        submitCustomId = RemixModalSubmitID;
+        break;
+      default:
+        submitCustomId = RemixModalSubmitID;
+        break;
+    }
     return this.ModalSubmitApi({
       nonce,
       msgId,
       customId,
       prompt,
-      submitCustomId: RemixModalSubmitID,
+      submitCustomId
     });
   }
 
