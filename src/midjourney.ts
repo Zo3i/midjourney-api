@@ -48,7 +48,7 @@ export class Midjourney extends MidjourneyMessage {
   }
   async init() {
     await this.Connect();
-    const settings = await this.Settings();
+    const settings = await this.Settings(); 
     if (settings) {
       // this.log(`settings:`, settings.content);
       const remix = settings.options.find((o) => o.label === "Remix mode");
@@ -62,7 +62,19 @@ export class Midjourney extends MidjourneyMessage {
     }
     return this;
   }
-  getRemixStatus() {
+  async getRemixStatus() {
+    const settings = await this.Settings(); 
+    if (settings) {
+      // this.log(`settings:`, settings.content);
+      const remix = settings.options.find((o) => o.label === "Remix mode");
+      if (remix?.style == 3) {
+        this.config.Remix = true;
+        this.log(`Remix mode enabled`);
+      }else {
+        this.config.Remix = false;
+        this.log(`Remix mode disabled`);
+      }
+    }
     return this.config.Remix === true;
   }
 
