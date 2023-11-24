@@ -62,7 +62,7 @@ export class Midjourney extends MidjourneyMessage {
     }
     return this;
   }
-  async getRemixStatus() {
+  async getRemixStatus(time:number) {
     const settings = await this.Settings(); 
     if (settings) {
       // this.log(`settings:`, settings.content);
@@ -75,7 +75,10 @@ export class Midjourney extends MidjourneyMessage {
         this.log(`Remix mode disabled`);
       }
     }
-    return this.config.Remix === true;
+    return {
+      time,
+      enable: this.config.Remix === true
+    };
   }
 
   async Imagine(prompt: string, loading?: LoadingHandler) {
